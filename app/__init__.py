@@ -6,8 +6,8 @@ from flask_admin import Admin
 from flask_admin import helpers as admin_helpers
 from flask_security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required
-
 from config import Config
+import os
 
 # Init
 app = Flask(__name__, instance_relative_config=True)
@@ -46,6 +46,12 @@ security = Security(app, user_datastore)
 
 #create roles if not exists
 def create_roles_if_not_exists():
+    # create instance directory
+    if not os.path.exists("instance"):
+        os.makedirs("instance")
+
+    db.create_all()
+
     super_user_role_exists = False
     reader_role_exists = False
     super_user_exists = False

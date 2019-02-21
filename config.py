@@ -2,7 +2,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
-    # ...
+    # sql alchemy Configuration
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'instance/app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False,
@@ -11,6 +11,7 @@ class Config(object):
     FLASK_ADMIN_SWATCH = 'cosmo'
 
     # Flask-Security config
+    # TODO: Change password salt if running in production
     SECURITY_URL_PREFIX = "/admin"
     SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
     SECURITY_PASSWORD_SALT = 'CHANGE_ME'
@@ -29,6 +30,11 @@ class Config(object):
     SECURITY_SEND_REGISTER_EMAIL = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # TODO: Change default superuser data or:
+    # TODO: 1. Run app and register as a user
+    # TODO: 2. login with default admin
+    # TODO: 3. give created user the role: superuser
+    # TODO: 4. delete admin
     DEFAULT_SUPER_USER_MAIL = "admin"
     DEFAULT_SUPER_USER_PASSWORD = "admin"
 

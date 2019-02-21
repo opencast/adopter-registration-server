@@ -17,8 +17,9 @@
             {% if current_user.is_authenticated and current_user.has_role('superuser') %}
             <p>
                 You are a superuser!
-                As a superuser you can edit and delete all entries. Be careful granting other people
-                superuser-permissions!
+                As a superuser you can edit and delete all entries. If you need to add a role to an user go to
+                <b>User > *edit profile of user*</b> and add the role to the <b>roles</b>-field. Be careful granting
+                other people superuser-permissions!
             </p>
             {% elif current_user.is_authenticated and current_user.has_role('readonly') %}
             <p>
