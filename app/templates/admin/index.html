@@ -1,0 +1,37 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h1>Welcome to the Administration Page!</h1>
+            {% if not current_user.is_authenticated %}
+            <p>
+                You can register but a superuser needs to update your role as 'superuser' to have access to the admin
+                page
+                <p>
+                <a class="btn btn-primary" href="{{ url_for('security.login') }}">login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">register</a>
+            </p>
+            {% endif %}
+
+            {% if current_user.is_authenticated and current_user.has_role('superuser') %}
+            <p>
+                You are a superuser!
+                As a superuser you can edit and delete all entries. Be careful granting other people
+                superuser-permissions!
+            </p>
+            {% elif current_user.is_authenticated and current_user.has_role('readonly') %}
+            <p>
+                You successfully registered! To edit/delete entries and user a superuser needs to grant you the
+                "superuser" role!
+            </p>
+            {% else %}
+            <p>
+                You successfully registered! To use the admin-page a superuser needs to grant you the "superuser" or
+                the "readonly" role!
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock body %}
