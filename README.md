@@ -34,6 +34,9 @@ pip install -r requirements.txt
 - Configure TODOs in `config.py` (if you want to run it in production)
 - Run app:
 ```bash
+// ignore following line if running in production
+export FLASK_ENV=development
+
 flask run
 // if you run into ModuleNotFound-Error try using
 venv/bin/flask run
