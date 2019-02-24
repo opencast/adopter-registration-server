@@ -26,7 +26,7 @@
                 You successfully registered! To edit/delete entries and user a superuser needs to grant you the
                 "superuser" role!
             </p>
-            {% else %}
+            {% elif current_user.is_authenticated %}
             <p>
                 You successfully registered! To use the admin-page a superuser needs to grant you the "superuser" or
                 the "readonly" role!
