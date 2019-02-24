@@ -46,7 +46,7 @@ venv/bin/flask run
 ## User model / security:
 To ensure security there is a role based user model implemented.
 Before handling the first request this app will create the database, create the roles "readonly" and "superuser"
-and will create the default superuser defined in `config.py`. This default admin should be configured with a strong
+and will create the default superuser defined in `config.py` (default: Email: "admin", "Password": "admin"). This default admin should be configured with a strong
 password or be deleted after another superuser was created.
 
 To access the admin page you need to create an account. The created user will not have any permissions.
@@ -65,6 +65,28 @@ Method | Endpoint | Description | Auth | Query param
 `GET` | `/api/1.0/adopter/<adopter_key>` | Query adopter by adopter_key | [everybody] |
 `PUT` | `/api/1.0/adopter/<adopter_key>` | Edit adopter | [everybody] |
 
+**Example:**
+```json
+{
+	"adopter_key": "C2B1262C424F905466FBCF2ACA1148CF",
+	"type": "organisation",
+	"organisation_name": "Example University",
+	"gender": null,
+	"first_name": null,
+	"last_name": null,
+	"mail": null,
+	"phone_contact": null,
+	"country": "GER",
+	"area_code": "12345",
+	"city": "Exampletown",
+	"street": "Main Street",
+	"street_no": "1A",
+	"using_opencast_since": 2017,
+	"allows_statistics": true,
+	"allows_error_reports": true
+}
+```
+
 ### Statistics Report
 Method | Endpoint | Description | Auth | Query param 
 ------ | -------- | ----------- | ---- | -----------
@@ -73,6 +95,16 @@ Method | Endpoint | Description | Auth | Query param
 `GET` | `/api/1.0/statistics_report/<id>` | Query statistic report by id | [readonly/superuser] | 
 `GET` | `/api/1.0/adopter/<adopter_key>/statistics_report` | Query statistics reports from adopter | [everybody] | `__limit` & `__offset`
 
+**Example:**
+```json
+{
+	"from_date": "2019-01-01",
+	"to_date": "2019-01-31",
+	"opencast_version": "6.0.0",
+	"adopter_key": "C2B1262C424F905466FBCF2ACA1148CF"
+}
+```
+
 ### Error Event
 Method | Endpoint | Description | Auth | Query param 
 ------ | -------- | ----------- | ---- | -----------
@@ -80,3 +112,14 @@ Method | Endpoint | Description | Auth | Query param
 `GET` | `/api/1.0/error_event` | Query all error events | [readonly/superuser] | `__limit` & `__offset`
 `GET` | `/api/1.0/error_event/<id>` | Query error event by id | [readonly/superuser] | 
 `GET` | `/api/1.0/adopter/<adopter_key>/error_event` | Query error events from adopter | [everybody] | `__limit` & `__offset`
+
+**Example:**
+```json
+{
+	"timestamp": "2019-02-24T12:34:56+0100",
+	"adopter_key": "C2B1262C424F905466FBCF2ACA1148CF",
+	"error_type": "Runtime Exception",
+	"data": "{'some': 'json_data'}",
+	"opencast_version": "6.0.0"
+}
+```

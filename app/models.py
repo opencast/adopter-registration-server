@@ -31,7 +31,8 @@ class Adopter(db.Model):
         for k, v in values.items():
             if k == "type" and v not in ["organisation", "person"]:
                 raise ValueError("Invalid argument for 'type'")
-            if k == "gender" and v not in ["male", "female", None]:
+            if k == "gender" and (v not in ["male", "female"] and v is not None):
+                print(v)
                 raise ValueError("Invalid argument for 'gender'")
             setattr(self, k, v)
 

@@ -34,7 +34,7 @@ def get_adopter_dict_from_request():
             else:
                 raise InvalidUsage("Invalid argument for 'type'", status_code=400)
 
-        if field == "gender":
+        if field == "gender" and "gender" in required_fields:
             if request.json[field] not in ["male", "female"]:
                 raise InvalidUsage("Invalid argument for 'gender'", status_code=400)
         payload[field] = request.json[field]
@@ -42,7 +42,7 @@ def get_adopter_dict_from_request():
     for field in optional_fields:
         if field in request.json:
             if field == "gender":
-                if request.json[field] not in ["male", "female"]:
+                if request.json[field] not in ["male", "female"] and request.json[field] is not None:
                     raise InvalidUsage("Invalid argument for 'gender'", status_code=400)
             payload[field] = request.json[field]
         else:
