@@ -31,7 +31,7 @@ venv\Scripts\activate
 // NOTE: within the virtual environment 'pip' should automatically be version 3.x - use pip3 if it isn't
 pip install -r requirements.txt
 ```
-- Configure TODOs in `config.py`
+- Configure TODOs in `config.py` (if you want to run it in production)
 - Run app:
 ```bash
 flask run
