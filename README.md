@@ -57,6 +57,9 @@ A superuser needs to edit and add a role to your user profile.
 * superuser: readonly + can edit and delete entries and read/edit/delete users
 
 ## Api
+### Authentication
+Use BasicAuth for authentication.
+
 ### Adopter
 Method | Endpoint | Description | Auth | Query param 
 ------ | -------- | ----------- | ---- | -----------

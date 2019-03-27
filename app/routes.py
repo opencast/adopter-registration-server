@@ -1,8 +1,7 @@
-from enum import Enum
-
 from app.models import *
 from app.errors import *
 from flask import request
+from flask_security.decorators import roles_accepted, http_auth_required
 
 # Create schemata
 statistic_report_schema = StatisticsReportSchema(strict=True)
@@ -11,7 +10,6 @@ error_event_schema = ErrorEventSchema(strict=True)
 error_events_schema = ErrorEventSchema(many=True, strict=True)
 adopter_schema = AdopterSchema(strict=True)
 adopters_schema = AdopterSchema(many=True, strict=True)
-
 
 def get_adopter_dict_from_request():
     required_fields = ["adopter_key", "type", "country", "area_code", "city", "street", "street_no",
@@ -65,6 +63,8 @@ def add_adopter():
 
 # Get all adopters
 @app.route('/api/1.0/adopter',methods=['GET'])
+@http_auth_required(realm="")
+@roles_accepted('superuser', 'readonly')
 def get_adopters(limit=None, offset=None):
     if request.args.get('__limit'):
         limit = request.args.get('__limit')
@@ -120,6 +120,8 @@ def add_statistics_report():
 
 # Get all statistics reports
 @app.route('/api/1.0/statistics_report',methods=['GET'])
+@http_auth_required(realm="")
+@roles_accepted('superuser', 'readonly')
 def get_statistics_reports(limit=None, offset=None):
     if request.args.get('__limit'):
         limit = request.args.get('__limit')
@@ -149,6 +151,8 @@ def get_statistics_reports_by_adopter(adopter_key, limit=None, offset=None):
 
 # Get statistics report by id
 @app.route('/api/1.0/statistics_report/<id>',methods=['GET'])
+@http_auth_required(realm="")
+@roles_accepted('superuser', 'readonly')
 def get_statistics_report(id):
     report = StatisticsReport.query.get(id)
     return statistic_report_schema.jsonify(report)
@@ -180,6 +184,8 @@ def add_error_event():
 
 # Get all error events
 @app.route('/api/1.0/error_event',methods=['GET'])
+@http_auth_required(realm="")
+@roles_accepted('superuser', 'readonly')
 def get_error_events(limit=None, offset=None):
     if request.args.get('__limit'):
         limit = request.args.get('__limit')
@@ -210,6 +216,8 @@ def get_error_events_by_adopter(adopter_key, limit=None, offset=None):
 
 # Get error event by id
 @app.route('/api/1.0/error_event/<id>',methods=['GET'])
+@http_auth_required(realm="")
+@roles_accepted('superuser', 'readonly')
 def get_error_event(id):
     error_event = ErrorEvent.query.get(id)
     return error_event_schema.jsonify(error_event)

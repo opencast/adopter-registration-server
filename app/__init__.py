@@ -1,11 +1,10 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, jsonify
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_admin import helpers as admin_helpers
-from flask_security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required
+from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from config import Config
 import os
 
@@ -43,6 +42,14 @@ from app import views
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, models.User, models.Role)
 security = Security(app, user_datastore)
+
+
+def unauthorized_callback():
+    return jsonify(success=False,
+                       data={'logged_in': current_user.is_authenticated, "roles": current_user.roles},
+                       message='You are either not authenticated or do not have the right permission/role'), 401
+
+security._state.unauthorized_handler(unauthorized_callback)
 
 #create roles if not exists
 def create_roles_if_not_exists():
