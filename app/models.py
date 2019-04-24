@@ -6,21 +6,22 @@ from flask_security import Security, SQLAlchemyUserDatastore, \
 
 class Adopter(db.Model):
     adopter_key = db.Column(db.String(64), unique=True, nullable=False, primary_key=True, autoincrement=False)
-    type = db.Column(db.String(12), nullable=False)
     gender = db.Column(db.String(6))
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
-    organisation_name = db.Column(db.String(100))
+    organisation_name = db.Column(db.String(100), nullable=False)
+    department_name = db.Column(db.String(100))
     country = db.Column(db.String(3), nullable=False)   # alpha_3
-    area_code = db.Column(db.String(10), nullable=False)
+    postal_code = db.Column(db.String(10), nullable=False)
     city = db.Column(db.String(80), nullable=False)
-    street = db.Column(db.String(80), nullable=False)
-    street_no = db.Column(db.String(10), nullable=False)
+    street = db.Column(db.String(80))
+    street_no = db.Column(db.String(10))
+    address_additional = db.Column(db.String(100))
     mail = db.Column(db.String(50))
-    phone_contact = db.Column(db.String(50))
-    using_opencast_since = db.Column(db.SmallInteger, nullable=False)
+    contact_me = db.Column(db.Boolean, nullable=False)
     allows_statistics = db.Column(db.Boolean, nullable=False)
     allows_error_reports = db.Column(db.Boolean, nullable=False)
+    allows_tech_data = db.Column(db.Boolean, nullable=False)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     last_activity = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
@@ -29,8 +30,6 @@ class Adopter(db.Model):
 
     def update(self, values):
         for k, v in values.items():
-            if k == "type" and v not in ["organisation", "person"]:
-                raise ValueError("Invalid argument for 'type'")
             if k == "gender" and (v not in ["male", "female"] and v is not None):
                 print(v)
                 raise ValueError("Invalid argument for 'gender'")
@@ -39,9 +38,10 @@ class Adopter(db.Model):
 # Statistics Report Schema
 class AdopterSchema(ma.Schema):
     class Meta:
-        fields = ('adopter_key', 'type', 'gender', 'first_name', 'last_name', 'organisation_name', 'country',
-                  'area_code', 'city', 'street', 'street_no', 'mail', 'phone_contact', 'using_opencast_since',
-                  'allows_statistics', 'allows_error_reports', 'created', 'last_activity')
+        fields = ('adopter_key', 'gender', 'first_name', 'last_name', 'organisation_name', 'department_name',
+                  'country', 'postal_code', 'city', 'street', 'street_no', 'address_additional', 'mail',
+                  'contact_me', 'allows_statistics', 'allows_error_reports', 'allows_tech_data', 'created',
+                  'last_activity')
 
 class StatisticsReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)

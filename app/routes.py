@@ -12,29 +12,18 @@ adopter_schema = AdopterSchema(strict=True)
 adopters_schema = AdopterSchema(many=True, strict=True)
 
 def get_adopter_dict_from_request():
-    required_fields = ["adopter_key", "type", "country", "area_code", "city", "street", "street_no",
-                       "using_opencast_since", "allows_statistics", "allows_error_reports"]
+    required_fields = ["adopter_key", "country", "postal_code", "city", "street", "street_no",
+                       "allows_statistics", "allows_error_reports", "allows_tech_data",
+                       "contact_me", "organisation_name"]
 
-    optional_fields = ["mail", "phone_contact"]
+    optional_fields = ["mail", "gender", "first_name", "last_name", 'department_name', 'address_additional']
 
     payload = dict()
 
     for field in required_fields:
         if field not in request.json:
             raise InvalidUsage("ERROR: At least one required field is missing: '" + field + "'", status_code=400)
-        if field == "type":
-            if request.json["type"] == "organisation":
-                required_fields += ["organisation_name"]
-                optional_fields += ["gender", "first_name", "last_name"]
-            elif request.json["type"] == "person":
-                required_fields += ["gender", "first_name", "last_name"]
-                optional_fields += ["organisation_name"]
-            else:
-                raise InvalidUsage("Invalid argument for 'type'", status_code=400)
 
-        if field == "gender" and "gender" in required_fields:
-            if request.json[field] not in ["male", "female"]:
-                raise InvalidUsage("Invalid argument for 'gender'", status_code=400)
         payload[field] = request.json[field]
 
     for field in optional_fields:
@@ -164,7 +153,6 @@ def get_statistics_report(id):
 @app.route('/api/1.0/error_event', methods=['POST'])
 def add_error_event():
     timestamp = datetime.datetime.strptime(request.json["timestamp"], '%Y-%m-%dT%H:%M:%S%z')
-    print(timestamp)
     error_type = request.json["error_type"]
     data = request.json["data"]
     adopter_key = request.json["adopter_key"]

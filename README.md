@@ -72,21 +72,22 @@ Method | Endpoint | Description | Auth | Query param
 ```json
 {
 	"adopter_key": "C2B1262C424F905466FBCF2ACA1148CF",
-	"type": "organisation",
 	"organisation_name": "Example University",
+	"department_name": "Mathematics and Computer Science",
 	"gender": null,
 	"first_name": null,
 	"last_name": null,
 	"mail": null,
-	"phone_contact": null,
 	"country": "GER",
-	"area_code": "12345",
+	"postal_code": "12345",
 	"city": "Exampletown",
 	"street": "Main Street",
 	"street_no": "1A",
-	"using_opencast_since": 2017,
+	"address_additional": null,
+	"contact_me": false,
 	"allows_statistics": true,
-	"allows_error_reports": true
+	"allows_error_reports": true,
+	"allows_tech_data": true
 }
 ```
 
