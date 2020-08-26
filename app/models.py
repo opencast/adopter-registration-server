@@ -1,88 +1,139 @@
 from app import app, db, ma
+from marshmallow import fields
+import datetime
 import pycountry
 import datetime
 from flask_security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required
 
+
+# ================================================================================
+#  Adopter Model
+# ================================================================================
+
 class Adopter(db.Model):
-    adopter_key = db.Column(db.String(64), unique=True, nullable=False, primary_key=True, autoincrement=False)
-    gender = db.Column(db.String(6))
-    first_name = db.Column(db.String(50))
-    last_name = db.Column(db.String(50))
-    organisation_name = db.Column(db.String(100), nullable=False)
-    department_name = db.Column(db.String(100))
-    country = db.Column(db.String(3), nullable=False)   # alpha_3
-    postal_code = db.Column(db.String(10), nullable=False)
-    city = db.Column(db.String(80), nullable=False)
-    street = db.Column(db.String(80))
-    street_no = db.Column(db.String(10))
-    address_additional = db.Column(db.String(100))
-    mail = db.Column(db.String(50))
-    contact_me = db.Column(db.Boolean, nullable=False)
-    allows_statistics = db.Column(db.Boolean, nullable=False)
-    allows_error_reports = db.Column(db.Boolean, nullable=False)
-    allows_tech_data = db.Column(db.Boolean, nullable=False)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    last_activity = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    adopter_key             = db.Column(db.String(64), unique=True, nullable=False, primary_key=True, autoincrement=False)
+    first_name              = db.Column(db.String(50))
+    last_name               = db.Column(db.String(50))
+    organisation_name       = db.Column(db.String(100))
+    department_name         = db.Column(db.String(100))
+    country                 = db.Column(db.String(3))
+    postal_code             = db.Column(db.String(10))
+    city                    = db.Column(db.String(80))
+    street                  = db.Column(db.String(80))
+    street_no               = db.Column(db.String(10))
+    email                   = db.Column(db.String(50))
+    created                 = db.Column(db.DateTime, default=datetime.datetime.now)
+    updated                 = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self):
         pass
 
     def update(self, values):
         for k, v in values.items():
-            if k == "gender" and (v not in ["male", "female"] and v is not None):
-                print(v)
-                raise ValueError("Invalid argument for 'gender'")
+            if k in ["created", "updated"]:
+                continue
             setattr(self, k, v)
+        self.updated = datetime.datetime.now()
 
-# Statistics Report Schema
+
+# Adopter general data schema
 class AdopterSchema(ma.Schema):
-    class Meta:
-        fields = ('adopter_key', 'gender', 'first_name', 'last_name', 'organisation_name', 'department_name',
-                  'country', 'postal_code', 'city', 'street', 'street_no', 'address_additional', 'mail',
-                  'contact_me', 'allows_statistics', 'allows_error_reports', 'allows_tech_data', 'created',
-                  'last_activity')
+    adopter_key = fields.String()
+    first_name = fields.String()
+    last_name = fields.String()
+    organisation_name = fields.String()
+    department_name = fields.String()
+    country = fields.String()
+    postal_code = fields.String()
+    city = fields.String()
+    street = fields.String()
+    street_no = fields.String()
+    email = fields.String()
+    created = fields.String()
+    updated = fields.String()
 
-class StatisticsReport(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    from_date = db.Column(db.Date)
-    to_date = db.Column(db.Date)
-    adopter_key = db.Column(db.String(64), db.ForeignKey('adopter.adopter_key'),
-        nullable=False)
-    opencast_version = db.Column(db.String(20))
 
-    def __init__(self):
-        pass
+# ================================================================================
+#  Statistic Model
+# ================================================================================
 
-    def update(self, values):
-        for k, v in values.items():
-            setattr(self, k, v)
-
-class ErrorEvent(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime)
-    adopter_key = db.Column(db.String(64), db.ForeignKey('adopter.adopter_key'),
-        nullable=False)
-    error_type = db.Column(db.String(100))
-    data = db.Column(db.Text)
-    opencast_version = db.Column(db.String(20))
+# Statistic->Host database model
+class Host(db.Model):
+    id                      = db.Column(db.Integer, primary_key=True)
+    statistic_key           = db.Column(db.String, db.ForeignKey('statistic.statistic_key'))
+    cores                   = db.Column(db.String(50))
+    max_load                = db.Column(db.String(50))
+    memory                  = db.Column(db.String(50))
 
     def __init__(self):
         pass
 
     def update(self, values):
         for k, v in values.items():
+            if k == 'id':
+                continue
             setattr(self, k, v)
 
-# Statistics Report Schema
-class StatisticsReportSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'from_date', 'to_date', 'opencast_version', 'adopter_key')
 
-# ErrorEventSchema
-class ErrorEventSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'timestamp', 'error_type', 'opencast_version', 'data', 'adopter_key')
+# Statistic database model
+class Statistic(db.Model):
+    statistic_key           = db.Column(db.String(64), unique=True, nullable=False, primary_key=True, autoincrement=False)
+    job_count               = db.Column(db.String(50))
+    event_count             = db.Column(db.String(50))
+    series_count            = db.Column(db.String(100))
+    user_count              = db.Column(db.String(100))
+    hosts                   = db.relationship('Host', backref='statistic', lazy='joined')
+    created                 = db.Column(db.DateTime, default=datetime.datetime.now)
+    updated                 = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __init__(self):
+        pass
+
+    def update(self, values):
+        for stat_k, stat_v in values.items():
+            if stat_k == 'hosts':
+                if self.hosts is not None:
+                    for db_host in self.hosts:
+                        db.session.delete(db_host)
+                new_host_list = []
+                for host in stat_v:
+                    new_host = Host()
+                    new_host.update(host)
+                    new_host_list.append(new_host)
+                stat_v = new_host_list
+            setattr(self, stat_k, stat_v)
+        self.updated = datetime.datetime.now()
+
+
+#================================================================================
+# Marshmallow schemas for JSON serialization
+#================================================================================
+
+# Statistic->Host schema
+class StatisticHostSchema(ma.Schema):
+    id = fields.String()
+    statistic_key = fields.String()
+    cores = fields.String()
+    max_load = fields.String()
+    memory = fields.String()
+
+
+# Statistic schema
+class StatisticSchema(ma.Schema):
+    statistic_key = fields.String()
+    job_count = fields.String()
+    event_count = fields.String()
+    series_count = fields.String()
+    user_count = fields.String()
+    hosts = fields.Nested(StatisticHostSchema, many=True)
+    created = fields.DateTime()
+    updated = fields.DateTime()
+
+
+# ================================================================================
+#  User Stuff
+# ================================================================================
 
 # Define models
 roles_users = db.Table('roles_users',

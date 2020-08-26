@@ -1,36 +1,26 @@
 from app.models import *
 from app.errors import *
 from flask import request
+from flask import jsonify
 from flask_security.decorators import roles_accepted, http_auth_required
 
 # Create schemata
-statistic_report_schema = StatisticsReportSchema(strict=True)
-statistic_reports_schema = StatisticsReportSchema(many=True, strict=True)
-error_event_schema = ErrorEventSchema(strict=True)
-error_events_schema = ErrorEventSchema(many=True, strict=True)
 adopter_schema = AdopterSchema(strict=True)
 adopters_schema = AdopterSchema(many=True, strict=True)
+statistic_schema = StatisticSchema(strict=True)
+statistics_schema = StatisticSchema(many=True, strict=True)
 
-def get_adopter_dict_from_request():
-    required_fields = ["adopter_key", "country", "postal_code", "city", "street", "street_no",
-                       "allows_statistics", "allows_error_reports", "allows_tech_data",
-                       "contact_me", "organisation_name"]
 
-    optional_fields = ["mail", "gender", "first_name", "last_name", 'department_name', 'address_additional']
-
+# Creates a dictionary from the adopter request
+def get_dict_from_request(required_fields, optional_fields):
     payload = dict()
-
     for field in required_fields:
         if field not in request.json:
             raise InvalidUsage("ERROR: At least one required field is missing: '" + field + "'", status_code=400)
-
         payload[field] = request.json[field]
 
     for field in optional_fields:
         if field in request.json:
-            if field == "gender":
-                if request.json[field] not in ["male", "female"] and request.json[field] is not None:
-                    raise InvalidUsage("Invalid argument for 'gender'", status_code=400)
             payload[field] = request.json[field]
         else:
             payload[field] = None
@@ -38,189 +28,65 @@ def get_adopter_dict_from_request():
     return payload
 
 
+#================================================================================
+# Adopter REST endpoints
+#================================================================================
+
 # Create adopter
 @app.route('/api/1.0/adopter', methods=['POST'])
 def add_adopter():
-    payload = get_adopter_dict_from_request()
+    required_fields = ['adopter_key']
+    optional_fields = ['country', 'postal_code', 'city', 'street', 'street_no',
+                       'organisation_name', 'email', 'first_name', 'last_name',
+                       'department_name']
 
-    new_adopter = Adopter()
-    new_adopter.update(payload)
-    db.session.add(new_adopter)
+    payload = get_dict_from_request(required_fields, optional_fields)
+    adopter = Adopter.query.get(payload['adopter_key'])
+    if adopter is None:
+        adopter = Adopter()
+        db.session.add(adopter)
+    adopter.update(payload)
     db.session.commit()
+    response = adopter_schema.dumps(adopter).data
+    return jsonify({'adopter' : response})
 
-    return adopter_schema.jsonify(new_adopter)
 
 # Get all adopters
 @app.route('/api/1.0/adopter',methods=['GET'])
-@http_auth_required(realm="")
-@roles_accepted('superuser', 'readonly')
 def get_adopters(limit=None, offset=None):
-    if request.args.get('__limit'):
-        limit = request.args.get('__limit')
-    if request.args.get('__offset'):
-        offset = request.args.get('__offset')
-    all_adopters = Adopter.query.limit(limit).offset(offset).all()
-    return adopters_schema.jsonify(all_adopters)
-
-# Get adopter report by adopter_key
-@app.route('/api/1.0/adopter/<adopter_key>',methods=['GET'])
-def get_adopter(adopter_key):
-    a = Adopter.query.get(adopter_key)
-    return adopter_schema.jsonify(a)
+    adopters = Adopter.query.all()
+    response = adopters_schema.dump(adopters).data
+    return jsonify({'adopters' : response})
 
 
-# Update adopter by adopter_key
-@app.route('/api/1.0/adopter/<adopter_key>', methods=['PUT'])
-def update_adopter(adopter_key):
-    adopter = Adopter.query.get(adopter_key)
-    if adopter is None:
-        raise InvalidUsage("Adopter with id '" + adopter_key + "' not found")
-    payload = get_adopter_dict_from_request()
 
-    for col in ["adopter_key", "created", "last_activity"]:
-        if col in payload:
-            del payload[col]
-
-    adopter.update(payload)
-    db.session.commit()
-
-    return adopter_schema.jsonify(adopter)
-
+#================================================================================
+# Statistic REST endpoints
+#================================================================================
 
 # Create statistics report
-@app.route('/api/1.0/statistics_report', methods=['POST'])
-def add_statistics_report():
-    from_date = datetime.datetime.strptime(request.json["from_date"], '%Y-%m-%d')
-    to_date = datetime.datetime.strptime(request.json["to_date"], '%Y-%m-%d')
-    opencast_version = request.json["opencast_version"]
-    adopter_key = request.json["adopter_key"]
-    adopter = Adopter.query.get(adopter_key)
-    if adopter is None:
-        raise InvalidUsage("No adopter found with this key", status_code=400)
-
-    new_report = StatisticsReport()
-    new_report.update({"adopter_key": adopter_key, "from_date": from_date, "to_date": to_date, "opencast_version": opencast_version})
-
-    db.session.add(new_report)
+@app.route('/api/1.0/statistic', methods=['POST'])
+def add_statistic():
+    required_fields = ['statistic_key']
+    optional_fields = ['job_count', 'event_count',
+                   'series_count', 'user_count', 'hosts']
+    payload = get_dict_from_request(required_fields, optional_fields)
+    statistic = Statistic.query.get(payload['statistic_key'])
+    if statistic is None:
+        statistic = Statistic()
+        db.session.add(statistic)
+    statistic.update(payload)
     db.session.commit()
-
-    return statistic_report_schema.jsonify(new_report)
-
-
-# Get all statistics reports
-@app.route('/api/1.0/statistics_report',methods=['GET'])
-@http_auth_required(realm="")
-@roles_accepted('superuser', 'readonly')
-def get_statistics_reports(limit=None, offset=None):
-    if request.args.get('__limit'):
-        limit = request.args.get('__limit')
-    if request.args.get('__offset'):
-        offset = request.args.get('__offset')
-    all_reports = StatisticsReport.query.order_by(StatisticsReport.to_date.desc()).limit(limit).offset(offset).all()
-    return statistic_reports_schema.jsonify(all_reports)
-
-# Get all statistics reports by  adopter
-@app.route('/api/1.0/adopter/<adopter_key>/statistics_report',methods=['GET'])
-def get_statistics_reports_by_adopter(adopter_key, limit=None, offset=None):
-    adopter = Adopter.query.get(adopter_key)
-    if adopter is None:
-        raise InvalidUsage("Adopter with id '" + adopter_key + "' not found")
-
-    if request.args.get('__limit'):
-        limit = request.args.get('__limit')
-    if request.args.get('__offset'):
-        offset = request.args.get('__offset')
-    all_reports = StatisticsReport.query.filter_by(adopter_key=adopter_key)\
-        .order_by(StatisticsReport.to_date.desc())\
-        .limit(limit)\
-        .offset(offset)\
-        .all()
-    return statistic_reports_schema.jsonify(all_reports)
+    response = statistic_schema.dumps(statistic).data
+    return jsonify({'statistic' : response})
 
 
-# Get statistics report by id
-@app.route('/api/1.0/statistics_report/<id>',methods=['GET'])
-@http_auth_required(realm="")
-@roles_accepted('superuser', 'readonly')
-def get_statistics_report(id):
-    report = StatisticsReport.query.get(id)
-    return statistic_report_schema.jsonify(report)
-
-
-# ERROR EVENT
-
-# Create error event
-@app.route('/api/1.0/error_event', methods=['POST'])
-def add_error_event():
-    timestamp = datetime.datetime.strptime(request.json["timestamp"], '%Y-%m-%dT%H:%M:%S%z')
-    error_type = request.json["error_type"]
-    data = request.json["data"]
-    adopter_key = request.json["adopter_key"]
-    opencast_version = request.json["opencast_version"]
-    adopter = Adopter.query.get(adopter_key)
-    if adopter is None:
-        raise InvalidUsage("No adopter found with this key", status_code=400)
-
-    new_error_event = ErrorEvent()
-    new_error_event.update({"adopter_key": adopter_key, "opencast_version": opencast_version, "timestamp": timestamp, "error_type": error_type, "data": data})
-
-    db.session.add(new_error_event)
-    db.session.commit()
-
-    return error_event_schema.jsonify(new_error_event)
-
-
-# Get all error events
-@app.route('/api/1.0/error_event',methods=['GET'])
-@http_auth_required(realm="")
-@roles_accepted('superuser', 'readonly')
-def get_error_events(limit=None, offset=None):
-    if request.args.get('__limit'):
-        limit = request.args.get('__limit')
-    if request.args.get('__offset'):
-        offset = request.args.get('__offset')
-    all_events = ErrorEvent.query.order_by(ErrorEvent.timestamp.desc()).limit(limit).offset(offset).all()
-    return error_events_schema.jsonify(all_events)
-
-
-# Get all error events by  adopter
-@app.route('/api/1.0/adopter/<adopter_key>/error_event',methods=['GET'])
-def get_error_events_by_adopter(adopter_key, limit=None, offset=None):
-    adopter = Adopter.query.get(adopter_key)
-    if adopter is None:
-        raise InvalidUsage("Adopter with id '" + adopter_key + "' not found")
-
-    if request.args.get('__limit'):
-        limit = request.args.get('__limit')
-    if request.args.get('__offset'):
-        offset = request.args.get('__offset')
-    all_events = ErrorEvent.query.filter_by(adopter_key=adopter_key)\
-        .order_by(ErrorEvent.timestamp.desc())\
-        .limit(limit)\
-        .offset(offset)\
-        .all()
-    return error_events_schema.jsonify(all_events)
-
-
-# Get error event by id
-@app.route('/api/1.0/error_event/<id>',methods=['GET'])
-@http_auth_required(realm="")
-@roles_accepted('superuser', 'readonly')
-def get_error_event(id):
-    error_event = ErrorEvent.query.get(id)
-    return error_event_schema.jsonify(error_event)
-
-'''
-THIS IS AN EXAMPLE HOW TO CREATE A 'DELETE' ENDPOINT
-
-# Delete statistics report by id
-@app.route('/api/1.0/statistics_report/<id>',methods=['DELETE'])
-def delete_statistics_report(id):
-    report = StatisticsReport.query.get(id)
-    db.session.delete(report)
-    db.session.commit()
-    return statistic_report_schema.jsonify(report)
-'''
+# Get all statistic entries
+@app.route('/api/1.0/statistic',methods=['GET'])
+def get_statistics(limit=None, offset=None):
+    stats = Statistic.query.all()
+    response = statistics_schema.dump(stats).data
+    return jsonify({'statistics' : response})
 
 
 @app.route('/')

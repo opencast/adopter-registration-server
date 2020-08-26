@@ -5,12 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_admin import helpers as admin_helpers
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
+from flask_cors import CORS
 from config import Config
 import os
 
 # Init
 app = Flask(__name__, instance_relative_config=True)
 app.secret_key = 'super secret key'
+
+#to prevent cross domain issues
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Load config
 app.config.from_object(Config)
