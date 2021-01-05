@@ -2,7 +2,7 @@ from app import admin, db
 from flask import abort, redirect, request, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_security import current_user
-from app.models import Adopter, StatisticsReport, User, ErrorEvent
+from app.models import Adopter, User, Statistic, Host
 
 
 class CustomModelView(ModelView):
@@ -61,7 +61,7 @@ class UserView(AdminOnlyView):
 
 
 admin.add_view(MixedPermissionModelView(Adopter, db.session))
-admin.add_view(MixedPermissionModelView(ErrorEvent, db.session))
-admin.add_view(MixedPermissionModelView(StatisticsReport, db.session))
+admin.add_view(MixedPermissionModelView(Statistic, db.session))
+admin.add_view(MixedPermissionModelView(Host, db.session))
 admin.add_view(UserView(User, db.session))
 
