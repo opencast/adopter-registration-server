@@ -5,10 +5,10 @@ from flask import jsonify
 from flask_security.decorators import roles_accepted, http_auth_required
 
 # Create schemata
-adopter_schema = AdopterSchema(strict=True)
-adopters_schema = AdopterSchema(many=True, strict=True)
-statistic_schema = StatisticSchema(strict=True)
-statistics_schema = StatisticSchema(many=True, strict=True)
+adopter_schema = AdopterSchema()
+adopters_schema = AdopterSchema(many=True)
+statistic_schema = StatisticSchema()
+statistics_schema = StatisticSchema(many=True)
 
 
 # Creates a dictionary from the adopter request
