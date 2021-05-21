@@ -8,40 +8,42 @@ register the instance and allow sending error reports and monthly statistics rep
 ## Installation Guide
 
 - Clone Repository:
-```bash
-git clone https://github.com/opencast/adopter-statistics-server.git
-cd adopter-statistics-server
-```
+	```bash
+	git clone https://github.com/opencast/adopter-statistics-server.git
+	cd adopter-statistics-server
+	```
 - Create virtual enviroment:
-```bash
-python3 -m venv venv
-
-// on Windows:
-py -3 -m venv venv
-```
+	```bash
+	python -m venv venv
+	```
 - Activate the environment:
-```bash
-. venv/bin/activate
-
-// on Windows:
-venv\Scripts\activate
-```
+	```bash
+	. venv/bin/activate
+	```
 - Install requirements:
-```bash
-// NOTE: within the virtual environment 'pip' should automatically be version 3.x - use pip3 if it isn't
-pip install -r requirements.txt
-```
+	```bash
+	pip install -r requirements.txt
+	```
 - Configure TODOs in `config.py` (if you want to run it in production)
 - Run app:
-```bash
-// ignore following line if running in production
-export FLASK_ENV=development
+	```bash
+	// ignore following line if running in production
+	export FLASK_ENV=development
 
-flask run
-// if you run into ModuleNotFound-Error try using
-venv/bin/flask run
-```
+	flask run
+	// if you run into ModuleNotFound-Error try using
+	venv/bin/flask run
+	```
 - Open http://127.0.0.1:5000 (redirect to the admin page)
+
+## Opencast Configuration
+
+By default, Opencast will send data to register.opencast.org.
+For testing, you can change that by adding the following configuration option to the `custom.properties`:
+
+```properties
+org.opencastproject.adopter.statistic.server.url=http://127.0.0.1:5000/api/1.0/
+```
 
 ## User model / security:
 To ensure security there is a role based user model implemented.
