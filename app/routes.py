@@ -69,7 +69,7 @@ def get_adopters(limit=None, offset=None):
 def add_statistic():
     required_fields = ['statistic_key']
     optional_fields = ['job_count', 'event_count',
-                   'series_count', 'user_count', 'hosts']
+                   'series_count', 'user_count', 'hosts', 'version']
     payload = get_dict_from_request(required_fields, optional_fields)
     statistic = Statistic.query.get(payload['statistic_key'])
     if statistic is None:
