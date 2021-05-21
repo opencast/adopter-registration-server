@@ -86,6 +86,7 @@ class Statistic(db.Model):
     hosts                   = db.relationship('Host', backref='statistic', lazy='joined')
     created                 = db.Column(db.DateTime, default=datetime.datetime.now)
     updated                 = db.Column(db.DateTime, default=datetime.datetime.now)
+    version                 = db.Column(db.String(50))
 
     def __init__(self):
         pass
@@ -129,6 +130,7 @@ class StatisticSchema(ma.Schema):
     hosts = fields.Nested(StatisticHostSchema, many=True)
     created = fields.DateTime()
     updated = fields.DateTime()
+    version = fields.String()
 
 
 # ================================================================================
