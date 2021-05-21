@@ -47,7 +47,7 @@ def add_adopter():
         db.session.add(adopter)
     adopter.update(payload)
     db.session.commit()
-    response = adopter_schema.dumps(adopter).data
+    response = adopter_schema.dumps(adopter)
     return jsonify({'adopter' : response})
 
 
@@ -55,7 +55,7 @@ def add_adopter():
 @app.route('/api/1.0/adopter',methods=['GET'])
 def get_adopters(limit=None, offset=None):
     adopters = Adopter.query.all()
-    response = adopters_schema.dump(adopters).data
+    response = adopters_schema.dump(adopters)
     return jsonify({'adopters' : response})
 
 
@@ -77,7 +77,7 @@ def add_statistic():
         db.session.add(statistic)
     statistic.update(payload)
     db.session.commit()
-    response = statistic_schema.dumps(statistic).data
+    response = statistic_schema.dumps(statistic)
     return jsonify({'statistic' : response})
 
 
@@ -85,7 +85,7 @@ def add_statistic():
 @app.route('/api/1.0/statistic',methods=['GET'])
 def get_statistics(limit=None, offset=None):
     stats = Statistic.query.all()
-    response = statistics_schema.dump(stats).data
+    response = statistics_schema.dump(stats)
     return jsonify({'statistics' : response})
 
 
