@@ -42,7 +42,7 @@ By default, Opencast will send data to register.opencast.org.
 For testing, you can change that by adding the following configuration option to the `custom.properties`:
 
 ```properties
-org.opencastproject.adopter.statistic.server.url=http://127.0.0.1:5000/api/1.0/
+org.opencastproject.adopter.registration.server.url=http://127.0.0.1:5000
 ```
 
 ## User model / security:
