@@ -38,7 +38,7 @@ def add_adopter():
     required_fields = ['adopter_key']
     optional_fields = ['country', 'postal_code', 'city', 'street', 'street_no',
                        'organisation_name', 'email', 'first_name', 'last_name',
-                       'department_name']
+                       'department_name', 'contact_me', 'send_errors', 'send_usage']
 
     payload = get_dict_from_request(required_fields, optional_fields)
     adopter = Adopter.query.get(payload['adopter_key'])
@@ -68,8 +68,9 @@ def get_adopters(limit=None, offset=None):
 @app.route('/api/1.0/statistic', methods=['POST'])
 def add_statistic():
     required_fields = ['statistic_key']
-    optional_fields = ['job_count', 'event_count',
-                   'series_count', 'user_count', 'hosts', 'version']
+    optional_fields = ['adopter_key', 'job_count', 'event_count', 'ca_count',
+                       'series_count', 'user_count', 'hosts', 'version',
+                       'total_minutes', 'tenant_count']
     payload = get_dict_from_request(required_fields, optional_fields)
     statistic = Statistic.query.get(payload['statistic_key'])
     if statistic is None:

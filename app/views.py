@@ -55,13 +55,29 @@ class MixedPermissionModelView(CustomModelView):
 
         return False
 
+class AdopterView(MixedPermissionModelView):
+    column_list = ['adopter_key', 'send_errors', 'send_usage', 'contact_me', 'first_name', 'last_name',
+        'organisation_name', 'department_name', 'country', 'postal_code',
+        'city', 'street', 'street_no', 'email', 'created', 'updated']
+    column_searchable_list = ['adopter_key']
+
+class StatisticView(MixedPermissionModelView):
+    column_list = ['statistic_key', 'adopter_key', 'job_count', 'event_count',
+        'ca_count', 'event_count', 'series_count', 'user_count', 'created',
+        'updated', 'version', 'tenant_count']
+    column_searchable_list = ['statistic_key', 'adopter_key']
+
+class HostView(MixedPermissionModelView):
+    column_list = ['statistic_key', 'hostname', 'cores', 'max_load', 'memory', 'disk_space', 'services']
+    column_searchable_list = ['statistic_key']
+
 class UserView(AdminOnlyView):
     form_excluded_columns = ('password')
     column_exclude_list = ('password')
 
 
-admin.add_view(MixedPermissionModelView(Adopter, db.session))
-admin.add_view(MixedPermissionModelView(Statistic, db.session))
-admin.add_view(MixedPermissionModelView(Host, db.session))
+admin.add_view(AdopterView(Adopter, db.session))
+admin.add_view(StatisticView(Statistic, db.session))
+admin.add_view(HostView(Host, db.session))
 admin.add_view(UserView(User, db.session))
 
