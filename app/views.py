@@ -41,7 +41,7 @@ class MixedPermissionModelView(CustomModelView):
 
         if current_user.has_role('superuser'):
             self.can_create = False
-            self.can_edit = True
+            self.can_edit = False
             self.can_delete = True
             self.can_export = True
             return True
