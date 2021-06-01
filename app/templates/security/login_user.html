@@ -15,7 +15,9 @@
                 {{ render_field(login_user_form.next) }}
                 {{ render_field(login_user_form.submit, class="btn btn-primary") }}
             </form>
+            {% if security.registerable %}
             <p>Not yet signed up? Please <a href="{{ url_for('security.register') }}">register for an account</a>.</p>
+            {% endif %}
         </div>
     </div>
 </div>
