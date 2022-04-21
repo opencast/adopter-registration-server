@@ -63,7 +63,7 @@ class AdopterView(MixedPermissionModelView):
 
 class StatisticView(MixedPermissionModelView):
     column_list = ['statistic_key', 'adopter_key', 'job_count', 'event_count',
-        'ca_count', 'event_count', 'series_count', 'user_count', 'created',
+        'series_count', 'user_count', 'ca_count', 'total_minutes', 'created',
         'updated', 'version', 'tenant_count']
     column_searchable_list = ['statistic_key', 'adopter_key']
 
