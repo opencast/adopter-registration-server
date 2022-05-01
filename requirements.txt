@@ -21,7 +21,7 @@ Flask-WTF==0.14.3
 greenlet==1.1.0
 idna==3.3
 itsdangerous==2.0.1
-Jinja2==3.0.1
+Jinja2==3.1.2
 Mako==1.1.4
 MarkupSafe==2.0.1
 marshmallow==3.12.1
