@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in 0
+for i in 2
 do
   TMP_ADOPTER="$(mktemp)"
   adopter_uuid=`uuidgen`
@@ -9,7 +9,7 @@ do
   curl --header "Content-Type: application/json; utf-8" --data "@$TMP_ADOPTER" http://localhost:5000/api/1.0/adopter
   rm -f $TMP_ADOPTER
 
-  for j in 0
+  for j in 2
   do
     TMP_STAT="$(mktemp)"
     stat_uuid=`uuidgen`
