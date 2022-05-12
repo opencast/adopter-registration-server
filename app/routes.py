@@ -50,6 +50,18 @@ def add_adopter():
     response = adopter_schema.dumps(adopter)
     return jsonify({'adopter' : response})
 
+# Delete adopter
+@app.route('/api/1.0/adopter', methods=['DELETE'])
+def remove_adopter():
+    required_fields = ['adopter_key']
+    optional_fields = []
+
+    payload = get_dict_from_request(required_fields, optional_fields)
+    adopter = Adopter.query.get(payload['adopter_key'])
+    db.session.delete(adopter)
+    db.session.commit()
+    db.session.flush()
+    return jsonify({'deleted' : payload['adopter_key']})
 
 # Get all adopters
 @app.route('/api/1.0/adopter',methods=['GET'])
@@ -81,6 +93,23 @@ def add_statistic():
     response = statistic_schema.dumps(statistic)
     return jsonify({'statistic' : response})
 
+# Delete statistics report
+@app.route('/api/1.0/statistic', methods=['DELETE'])
+def remove_statistic():
+    required_fields = ['statistic_key']
+    optional_fields = []
+
+    payload = get_dict_from_request(required_fields, optional_fields)
+    hosts = db.session.query(Host).filter(Host.statistic_key == payload['statistic_key']).all()
+    for host in hosts:
+      db.session.delete(host)
+
+    statistic = Statistic.query.get(payload['statistic_key'])
+    db.session.delete(statistic)
+
+    db.session.commit()
+    db.session.flush()
+    return jsonify({'deleted' : payload['statistic_key']})
 
 # Get all statistic entries
 @app.route('/api/1.0/statistic',methods=['GET'])
