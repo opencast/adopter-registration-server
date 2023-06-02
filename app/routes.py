@@ -16,10 +16,11 @@ statistics_schema = StatisticSchema(many=True)
 def get_dict_from_request(required_fields, optional_fields):
     #We do this rather than use request.json because OC prior to 12.12/13.7/14.0
     # *claimed* to be sending UTF-8, but was actually sending latin-1 (or system default)
-    # This doesn't seem to break anything when tested against the fixed version, but more non-(US/EU)
-    # locales may still be broken if the system default encoding is sufficiently different
-    req_json_bytes = request.data
-    req_json = json.loads(req_json_bytes.decode("latin-1").encode("utf-8"))
+    try:
+        req_json = json.loads(request.data)
+    except UnicodeDecodeError:
+        req_json = json.loads(request.data.decode("latin-1").encode("utf-8"))
+
     payload = dict()
     for field in required_fields:
         if field not in req_json:
