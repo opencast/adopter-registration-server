@@ -1,4 +1,4 @@
-alembic==1.8.1
+alembic==1.11.1
 Babel==2.10.3
 bcrypt==3.2.2
 blinker==1.5
