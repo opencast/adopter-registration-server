@@ -23,8 +23,12 @@ class Adopter(db.Model):
     street                  = db.Column(db.String(80))
     street_no               = db.Column(db.String(10))
     email                   = db.Column(db.String(50))
+    send_usage              = db.Column(db.Boolean())
+    send_errors             = db.Column(db.Boolean())
+    contact_me              = db.Column(db.Boolean())
     created                 = db.Column(db.DateTime, default=datetime.datetime.now)
     updated                 = db.Column(db.DateTime, default=datetime.datetime.now)
+    statistics              = db.relationship('Statistic', backref='host', lazy='joined')
 
     def __init__(self):
         pass
@@ -50,6 +54,9 @@ class AdopterSchema(ma.Schema):
     street = fields.String()
     street_no = fields.String()
     email = fields.String()
+    send_usage = fields.Boolean()
+    send_errors = fields.Boolean()
+    contact_me = fields.Boolean()
     created = fields.String()
     updated = fields.String()
 
@@ -61,10 +68,14 @@ class AdopterSchema(ma.Schema):
 # Statistic->Host database model
 class Host(db.Model):
     id                      = db.Column(db.Integer, primary_key=True)
-    statistic_key           = db.Column(db.String, db.ForeignKey('statistic.statistic_key'))
-    cores                   = db.Column(db.String(50))
-    max_load                = db.Column(db.String(50))
-    memory                  = db.Column(db.String(50))
+    statistic_key           = db.Column(db.String(64), db.ForeignKey('statistic.statistic_key'))
+    hostname                = db.Column(db.String(64))
+    cores                   = db.Column(db.Integer())
+    max_load                = db.Column(db.Float())
+    memory                  = db.Column(db.Integer())
+    disk_space              = db.Column(db.Integer())
+    services                = db.Column(db.String(1024))
+
 
     def __init__(self):
         pass
@@ -79,11 +90,15 @@ class Host(db.Model):
 # Statistic database model
 class Statistic(db.Model):
     statistic_key           = db.Column(db.String(64), unique=True, nullable=False, primary_key=True, autoincrement=False)
-    job_count               = db.Column(db.String(50))
-    event_count             = db.Column(db.String(50))
-    series_count            = db.Column(db.String(100))
-    user_count              = db.Column(db.String(100))
+    job_count               = db.Column(db.BigInteger())
+    event_count             = db.Column(db.BigInteger())
+    series_count            = db.Column(db.BigInteger())
+    user_count              = db.Column(db.BigInteger())
+    ca_count                = db.Column(db.Integer())
+    total_minutes           = db.Column(db.BigInteger())
     hosts                   = db.relationship('Host', backref='statistic', lazy='joined')
+    tenant_count            = db.Column(db.BigInteger())
+    adopter_key             = db.Column(db.String(64), db.ForeignKey('adopter.adopter_key'))
     created                 = db.Column(db.DateTime, default=datetime.datetime.now)
     updated                 = db.Column(db.DateTime, default=datetime.datetime.now)
     version                 = db.Column(db.String(50))
@@ -115,19 +130,25 @@ class Statistic(db.Model):
 class StatisticHostSchema(ma.Schema):
     id = fields.String()
     statistic_key = fields.String()
-    cores = fields.String()
-    max_load = fields.String()
-    memory = fields.String()
+    cores = fields.Integer()
+    max_load = fields.Float()
+    memory = fields.Integer()
+    disk_space = fields.Integer()
+    hostname = fields.String()
+    services = fields.String()
 
 
 # Statistic schema
 class StatisticSchema(ma.Schema):
-    statistic_key = fields.String()
-    job_count = fields.String()
-    event_count = fields.String()
-    series_count = fields.String()
-    user_count = fields.String()
+    id = fields.String()
+    job_count = fields.Integer()
+    event_count = fields.Integer()
+    series_count = fields.Integer()
+    user_count = fields.Integer()
+    ca_count = fields.Integer()
+    total_minutes = fields.Integer()
     hosts = fields.Nested(StatisticHostSchema, many=True)
+    tenant_count = fields.Integer()
     created = fields.DateTime()
     updated = fields.DateTime()
     version = fields.String()

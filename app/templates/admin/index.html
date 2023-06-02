@@ -10,7 +10,7 @@
                 You can register but a superuser needs to update your role as 'superuser' to have access to the admin
                 page
                 <p>
-                <a class="btn btn-primary" href="{{ url_for('security.login') }}">login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">register</a>
+                <a class="btn btn-primary" href="{{ url_for('security.login') }}">login</a>{% if security.registerable %}<a class="btn btn-default" href="{{ url_for('security.register') }}">register</a>{% endif %}
             </p>
             {% endif %}
 
