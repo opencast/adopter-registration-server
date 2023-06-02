@@ -48,15 +48,15 @@ user_datastore = SQLAlchemyUserDatastore(db, models.User, models.Role)
 security = Security(app, user_datastore)
 
 
+_security = app.extensions["security"]
+@_security.unauthz_handler
 def unauthorized_callback():
     return jsonify(success=False,
                        data={'logged_in': current_user.is_authenticated, "roles": current_user.roles},
                        message='You are either not authenticated or do not have the right permission/role'), 401
 
-security._state.unauthorized_handler(unauthorized_callback)
-
 #create roles if not exists
-def create_roles_if_not_exists():
+with app.app_context():
     # create instance directory
     if not os.path.exists("instance"):
         os.makedirs("instance")
@@ -109,8 +109,6 @@ def create_roles_if_not_exists():
         db.session.commit()
         print("Added default superuser!")
 
-
-app.before_first_request(create_roles_if_not_exists)
 
 # define a context processor for merging flask-admin's template context into the
 # flask-security views.

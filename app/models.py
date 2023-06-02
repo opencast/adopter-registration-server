@@ -172,6 +172,7 @@ class Role(db.Model, RoleMixin):
         return self.name
 
 class User(db.Model, UserMixin):
+    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
