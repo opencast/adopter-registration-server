@@ -3,6 +3,7 @@ from app.errors import *
 from flask import request
 from flask import jsonify
 from flask_security.decorators import roles_accepted, http_auth_required
+import json
 
 # Create schemata
 adopter_schema = AdopterSchema()
@@ -13,18 +14,23 @@ statistics_schema = StatisticSchema(many=True)
 
 # Creates a dictionary from the adopter request
 def get_dict_from_request(required_fields, optional_fields):
+    #We do this rather than use request.json because OC prior to 12.12/13.7/14.0
+    # *claimed* to be sending UTF-8, but was actually sending latin-1 (or system default)
+    # This doesn't seem to break anything when tested against the fixed version, but more non-(US/EU)
+    # locales may still be broken if the system default encoding is sufficiently different
+    req_json_bytes = request.data
+    req_json = json.loads(req_json_bytes.decode("latin-1").encode("utf-8"))
     payload = dict()
     for field in required_fields:
-        if field not in request.json:
+        if field not in req_json:
             raise InvalidUsage("ERROR: At least one required field is missing: '" + field + "'", status_code=400)
-        payload[field] = request.json[field]
+        payload[field] = req_json[field]
 
     for field in optional_fields:
-        if field in request.json:
-            payload[field] = request.json[field]
+        if field in req_json:
+            payload[field] = req_json[field]
         else:
             payload[field] = None
-
     return payload
 
 
