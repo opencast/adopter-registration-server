@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_admin import helpers as admin_helpers
-from flask_security import Security, SQLAlchemyUserDatastore, current_user
+from flask_security import Security, SQLAlchemyUserDatastore, current_user, hash_password
 from flask_cors import CORS
 from config import Config
 import os
@@ -104,7 +104,7 @@ with app.app_context():
                                "DEFAULT_SUPER_USER_PASSWORD is not defined in config")
 
         super_user = user_datastore.create_user(email=app.config["DEFAULT_SUPER_USER_MAIL"],
-                                 password=app.config["DEFAULT_SUPER_USER_PASSWORD"],
+                                 password=hash_password(app.config["DEFAULT_SUPER_USER_PASSWORD"]),
                                  roles=[super_user_role])
         db.session.commit()
         print("Added default superuser!")

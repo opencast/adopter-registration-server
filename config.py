@@ -35,7 +35,7 @@ class Config(object):
     # 2. login with default admin
     # 3. give created user the role: superuser
     # 4. delete admin
-    DEFAULT_SUPER_USER_MAIL = "admin"
+    DEFAULT_SUPER_USER_MAIL = "admin@opencast.org"
     DEFAULT_SUPER_USER_PASSWORD = "admin"
 
     SECURITY_TRACKABLE = True
