@@ -2,7 +2,7 @@ from app import admin, db
 from flask import abort, redirect, request, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_security import current_user
-from app.models import Adopter, User, Statistic, Host
+from app.models import Adopter, User, Statistic, Host, Tobira
 
 
 class CustomModelView(ModelView):
@@ -71,6 +71,10 @@ class HostView(MixedPermissionModelView):
     column_list = ['statistic_key', 'hostname', 'cores', 'max_load', 'memory', 'disk_space', 'services']
     column_searchable_list = ['statistic_key']
 
+class TobiraView(MixedPermissionModelView):
+    column_list = ['id', 'statistic_key', 'num_realms', 'num_blocks']
+    column_searchable_list = ['statistic_key']
+
 class UserView(AdminOnlyView):
     form_excluded_columns = ('password')
     column_exclude_list = ('password')
@@ -79,5 +83,6 @@ class UserView(AdminOnlyView):
 admin.add_view(AdopterView(Adopter, db.session))
 admin.add_view(StatisticView(Statistic, db.session))
 admin.add_view(HostView(Host, db.session))
+admin.add_view(TobiraView(Tobira, db.session))
 admin.add_view(UserView(User, db.session))
 

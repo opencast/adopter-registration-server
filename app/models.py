@@ -122,6 +122,23 @@ class Statistic(db.Model):
         self.updated = datetime.datetime.now()
 
 
+class Tobira(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    statistic_key           = db.Column(db.String(64), unique=True, nullable=False)
+    numRealms = db.Column(db.BigInteger())
+    numBlocks = db.Column(db.BigInteger())
+    version = db.Column(db.String(50))
+    gitHash = db.Column(db.String(32))
+
+    def __init__(self):
+        pass
+
+    def update(self, values):
+        for k, v in values.items():
+            if k == 'id':
+                continue
+            setattr(self, k, v)
+
 #================================================================================
 # Marshmallow schemas for JSON serialization
 #================================================================================
@@ -151,6 +168,13 @@ class StatisticSchema(ma.Schema):
     tenant_count = fields.Integer()
     created = fields.DateTime()
     updated = fields.DateTime()
+    version = fields.String()
+
+class TobiraSchema(ma.Schema):
+    id = fields.String()
+    statistic_key = fields.String()
+    num_realms = fields.Integer()
+    num_blocks = fields.Integer()
     version = fields.String()
 
 
