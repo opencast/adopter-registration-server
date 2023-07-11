@@ -123,12 +123,21 @@ class Statistic(db.Model):
 
 
 class Tobira(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    statistic_key           = db.Column(db.String(64), unique=True, nullable=False)
-    numRealms = db.Column(db.BigInteger())
-    numBlocks = db.Column(db.BigInteger())
-    version = db.Column(db.String(50))
-    gitHash = db.Column(db.String(32))
+    statistic_key           = db.Column(db.String(64), unique=True, nullable=False, primary_key=True, autoincrement=False)
+    num_realms = db.Column(db.BigInteger())
+    num_blocks = db.Column(db.BigInteger())
+
+    identifier = db.Column(db.String(50))
+    git_commit_hash = db.Column(db.String(32))
+    build_time_utc = db.Column(db.String(50))
+    git_was_dirty = db.Column(db.Boolean())
+
+    download_button_shown = db.Column(db.Boolean())
+    auth_mode = db.Column(db.String(32))
+    login_link_overridden = db.Column(db.Boolean())
+    logout_link_overridden = db.Column(db.Boolean())
+    uses_pre_auth = db.Column(db.Boolean())
+    has_narrow_logo = db.Column(db.Boolean())
 
     def __init__(self):
         pass
@@ -137,6 +146,18 @@ class Tobira(db.Model):
         for k, v in values.items():
             if k == 'id':
                 continue
+            if k == 'config':
+                self.download_button_shown = v['download_button_shown']
+                self.auth_mode = v['auth_mode']
+                self.login_link_overridden = v['login_link_overridden']
+                self.logout_link_overridden = v['logout_link_overridden']
+                self.uses_pre_auth = v['uses_pre_auth']
+                self.has_narrow_logo = v['has_narrow_logo']
+            if k == 'version':
+                self.identifier = v['identifier']
+                self.build_time_utc = v['build_time_utc']
+                self.git_commit_hash = v['git_commit_hash']
+                self.git_was_dirty = v['git_was_dirty']
             setattr(self, k, v)
 
 #================================================================================
@@ -170,12 +191,27 @@ class StatisticSchema(ma.Schema):
     updated = fields.DateTime()
     version = fields.String()
 
+class TobiraVersionSchema(ma.Schema):
+    identifier = fields.String()
+    build_time_utc = fields.String()
+    git_commit_hash = fields.String()
+    git_was_dirty = fields.String()
+
+class TobiraConfigSchema(ma.Schema):
+    download_button_shown = fields.Boolean()
+    auth_mode = fields.String()
+    login_link_overridden = fields.Boolean()
+    logout_link_overridden = fields.Boolean()
+    uses_pre_auth = fields.Boolean()
+    has_narrow_logo = fields.Boolean()
+
 class TobiraSchema(ma.Schema):
     id = fields.String()
     statistic_key = fields.String()
     num_realms = fields.Integer()
     num_blocks = fields.Integer()
-    version = fields.String()
+    version = fields.Nested(TobiraVersionSchema)
+    config = fields.Nested(TobiraConfigSchema)
 
 
 # ================================================================================

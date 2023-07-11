@@ -130,14 +130,16 @@ def get_statistics(limit=None, offset=None):
 # Create Tobira report
 @app.route('/api/1.0/tobira', methods=['POST'])
 def add_tobira():
-    required_fields = ['statistic_key']
-    optional_fields = ['num_realms', 'num_blocks', 'version', 'config']
+    required_fields = ['statistic_key', 'data']
+    optional_fields = []
     payload = get_dict_from_request(required_fields, optional_fields)
     tobira = Tobira.query.get(payload['statistic_key'])
     if tobira is None:
         tobira = Tobira()
         db.session.add(tobira)
-    tobira.update(payload)
+    #Copy this into the data being ingested to Tobira, since we need it there too
+    payload['data']['statistic_key'] = payload['statistic_key']
+    tobira.update(payload['data'])
     db.session.commit()
     response = tobira_schema.dumps(tobira)
     return jsonify({'tobira' : response})

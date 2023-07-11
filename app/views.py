@@ -72,7 +72,7 @@ class HostView(MixedPermissionModelView):
     column_searchable_list = ['statistic_key']
 
 class TobiraView(MixedPermissionModelView):
-    column_list = ['id', 'statistic_key', 'num_realms', 'num_blocks']
+    column_list = ['id', 'statistic_key', 'num_realms', 'num_blocks', 'identifier', 'build_time_utc', 'git_commit_hash', 'git_was_dirty', 'download_button_shown', 'auth_mode', 'login_link_overridden', 'logout_link_overridden', 'uses_pre_auth', 'has_narrow_logo']
     column_searchable_list = ['statistic_key']
 
 class UserView(AdminOnlyView):
