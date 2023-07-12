@@ -124,20 +124,20 @@ class Statistic(db.Model):
 
 class Tobira(db.Model):
     statistic_key           = db.Column(db.String(64), unique=True, nullable=False, primary_key=True, autoincrement=False)
-    num_realms = db.Column(db.BigInteger())
-    num_blocks = db.Column(db.BigInteger())
+    num_realms              = db.Column(db.BigInteger())
+    num_blocks              = db.Column(db.BigInteger())
 
-    identifier = db.Column(db.String(50))
-    git_commit_hash = db.Column(db.String(32))
-    build_time_utc = db.Column(db.String(50))
-    git_was_dirty = db.Column(db.Boolean())
+    identifier              = db.Column(db.String(50))
+    git_commit_hash         = db.Column(db.String(32))
+    build_time_utc          = db.Column(db.String(50))
+    git_was_dirty           = db.Column(db.Boolean())
 
-    download_button_shown = db.Column(db.Boolean())
-    auth_mode = db.Column(db.String(32))
-    login_link_overridden = db.Column(db.Boolean())
-    logout_link_overridden = db.Column(db.Boolean())
-    uses_pre_auth = db.Column(db.Boolean())
-    has_narrow_logo = db.Column(db.Boolean())
+    download_button_shown   = db.Column(db.Boolean())
+    auth_mode               = db.Column(db.String(32))
+    login_link_overridden   = db.Column(db.Boolean())
+    logout_link_overridden  = db.Column(db.Boolean())
+    uses_pre_auth           = db.Column(db.Boolean())
+    has_narrow_logo         = db.Column(db.Boolean())
 
     def __init__(self):
         pass
