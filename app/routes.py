@@ -10,7 +10,8 @@ adopter_schema = AdopterSchema()
 adopters_schema = AdopterSchema(many=True)
 statistic_schema = StatisticSchema()
 statistics_schema = StatisticSchema(many=True)
-
+tobira_schema = TobiraSchema()
+tobiras_schema = TobiraSchema(many=True)
 
 # Creates a dictionary from the adopter request
 def get_dict_from_request(required_fields, optional_fields):
@@ -124,6 +125,46 @@ def get_statistics(limit=None, offset=None):
     stats = Statistic.query.all()
     response = statistics_schema.dump(stats)
     return jsonify({'statistics' : response})
+
+
+# Create Tobira report
+@app.route('/api/1.0/tobira', methods=['POST'])
+def add_tobira():
+    required_fields = ['statistic_key', 'data']
+    optional_fields = []
+    payload = get_dict_from_request(required_fields, optional_fields)
+    tobira = Tobira.query.get(payload['statistic_key'])
+    if tobira is None:
+        tobira = Tobira()
+        db.session.add(tobira)
+    #Copy this into the data being ingested to Tobira, since we need it there too
+    payload['data']['statistic_key'] = payload['statistic_key']
+    tobira.update(payload['data'])
+    db.session.commit()
+    response = tobira_schema.dumps(tobira)
+    return jsonify({'tobira' : response})
+
+# Delete Tobira report
+@app.route('/api/1.0/tobira', methods=['DELETE'])
+def remove_tobira():
+    required_fields = ['statistic_key']
+    optional_fields = []
+
+    payload = get_dict_from_request(required_fields, optional_fields)
+    tobira = Tobira.query.get(payload['statistic_key'])
+    db.session.delete(tobira)
+
+    db.session.commit()
+    db.session.flush()
+    return jsonify({'deleted' : payload['statistic_key']})
+
+
+# Get all Tobira entries
+@app.route('/api/1.0/tobira',methods=['GET'])
+def get_tobira(limit=None, offset=None):
+    stats = Tobira.query.all()
+    response = tobira_schema.dump(tobira)
+    return jsonify({'tobira' : response})
 
 
 @app.route('/')
