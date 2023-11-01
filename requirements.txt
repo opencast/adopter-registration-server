@@ -10,7 +10,7 @@ Flask==2.3.2
 Flask-Admin==1.6.1
 Flask-BabelEx==0.9.4
 Flask-Cors==4.0.0
-Flask-Login==0.6.2
+Flask-Login==0.6.3
 Flask-Mail==0.9.1
 flask-marshmallow==0.15.0
 Flask-Migrate==4.0.4
