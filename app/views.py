@@ -56,7 +56,7 @@ class MixedPermissionModelView(CustomModelView):
         return False
 
 class AdopterView(MixedPermissionModelView):
-    column_list = ['adopter_key', 'test_system', 'send_errors', 'send_usage', 'contact_me', 'first_name', 'last_name',
+    column_list = ['adopter_key', 'system_type', 'send_errors', 'send_usage', 'contact_me', 'first_name', 'last_name',
         'organisation_name', 'department_name', 'country', 'postal_code',
         'city', 'street', 'street_no', 'email', 'created', 'updated']
     column_searchable_list = ['adopter_key']
