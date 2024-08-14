@@ -46,7 +46,7 @@ def add_adopter():
     required_fields = ['adopter_key']
     optional_fields = ['country', 'postal_code', 'city', 'street', 'street_no',
                        'organisation_name', 'email', 'first_name', 'last_name',
-                       'department_name', 'contact_me', 'send_errors', 'send_usage']
+                       'department_name', 'contact_me', 'system_type', 'send_errors', 'send_usage']
 
     payload = get_dict_from_request(required_fields, optional_fields)
     adopter = Adopter.query.get(payload['adopter_key'])
