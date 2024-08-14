@@ -113,7 +113,8 @@ def remove_statistic():
       db.session.delete(host)
 
     statistic = Statistic.query.get(payload['statistic_key'])
-    db.session.delete(statistic)
+    if statistic:
+        db.session.delete(statistic)
 
     db.session.commit()
     db.session.flush()
