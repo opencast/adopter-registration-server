@@ -34,7 +34,7 @@ pycountry==22.3.5
 pycparser==2.21
 python-dateutil==2.8.2
 python-editor==1.0.4
-pytz==2023.3
+pytz==2024.2
 setuptools==72.2.0
 six==1.16.0
 speaklater==1.3
