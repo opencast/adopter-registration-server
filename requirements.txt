@@ -22,7 +22,7 @@ greenlet==3.0.3
 gunicorn==22.0.0
 idna==3.7
 importlib_resources==6.4.5
-itsdangerous==2.1.2
+itsdangerous==2.2.0
 Jinja2==3.1.4
 Mako==1.2.4
 MarkupSafe==2.1.3
