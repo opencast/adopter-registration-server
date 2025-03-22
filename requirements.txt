@@ -19,7 +19,7 @@ Flask-Security-Too==5.3.3
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.1.2
 greenlet==3.0.3
-gunicorn==22.0.0
+gunicorn==23.0.0
 idna==3.7
 importlib_resources==6.4.5
 itsdangerous==2.2.0
