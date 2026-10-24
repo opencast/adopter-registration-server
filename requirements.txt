@@ -30,6 +30,7 @@ marshmallow==3.26.2
 marshmallow-sqlalchemy==0.29.0
 packaging==24.1
 passlib==1.7.4
+pip==26.2.0
 pip_audit==2.10.1
 pycountry==22.3.5
 pycparser==2.21
