@@ -6,7 +6,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Ubuntu-latest is lacking Python 3.9, which is what the actual registration server is curently running
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         # https://endoflife.date/python
